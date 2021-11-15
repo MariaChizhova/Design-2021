@@ -6,6 +6,9 @@ authors = ["Maria <mariachizhova17@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+pydantic = "^1.8.2"
+fastapi = "^0.70.0"
+SQLAlchemy = "^1.4.27"
 
 [tool.poetry.dev-dependencies]
 
