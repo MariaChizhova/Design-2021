@@ -1,9 +1,17 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from app.users.data import Base
 import datetime
+from pydantic import BaseModel
 
 
-class Group(Base):
+class Group(BaseModel):
+    id: int
+    created_date: datetime
+    admin_id: int
+    name: str
+
+
+class GroupDB(Base):
     __tablename__ = "groups"
 
     id = Column(Integer, primary_key=True)

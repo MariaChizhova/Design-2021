@@ -1,9 +1,21 @@
+from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey
 from app.users.data import Base
 import datetime
 
 
-class Task(Base):
+class Task(BaseModel):
+    id: int
+    created_date: datetime
+    name: str
+    description: str
+    priority: int
+    status: bool
+    start_time: datetime
+    end_time: datetime
+
+
+class TaskDB(Base):
     __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True)

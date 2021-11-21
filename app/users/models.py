@@ -4,7 +4,16 @@ import datetime
 from app.users.data import Base
 
 
-class User(Base):
+class User(BaseModel):
+    id: int
+    created_date: datetime
+    email: str
+    username: str
+    hashed_password: str
+    is_active: bool
+
+
+class UserDB(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
