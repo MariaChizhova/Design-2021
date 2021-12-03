@@ -5,14 +5,12 @@ import datetime
 
 
 class Task(BaseModel):
-    id: int
-    created_date: datetime
+    user_id: int
     name: str
     description: str
     priority: int
-    status: bool
-    start_time: datetime
-    end_time: datetime
+    start_time: datetime.datetime
+    end_time: datetime.datetime
 
 
 class TaskDB(Base):
@@ -28,14 +26,20 @@ class TaskDB(Base):
     end_time = Column(DateTime, default=datetime.datetime.utcnow)
 
 
-class Task_User(Base):
+class TaskUser(BaseModel):
+    user_id: int
+    task_id: int
+
+
+class TaskUserDB(Base):
     __tablename__ = "task_user"
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
 
-
+"""
 class Task_Group(Base):
     __tablename__ = "task_group"
     group_id = Column(Integer, ForeignKey('groups.id'), primary_key=True)
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
+"""

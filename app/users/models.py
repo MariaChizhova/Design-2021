@@ -5,12 +5,9 @@ from app.users.data import Base
 
 
 class User(BaseModel):
-    id: int
-    created_date: datetime
     email: str
     username: str
-    hashed_password: str
-    is_active: bool
+    password: str
 
 
 class UserDB(Base):
@@ -22,12 +19,3 @@ class UserDB(Base):
     username = Column(String, unique=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
-
-
-class UserScheme(BaseModel):
-    username: str
-
-
-class UserCreate(UserScheme):
-    password: str
-    email: str
