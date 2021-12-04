@@ -19,15 +19,14 @@ def create_task(db: Session, task: Task):
         db.commit()
         db.refresh(db_task_user)
     elif task.type == "group_task":
+        db_task_group = TaskGroupDB(task_id=db_task.id, group_id=task.entity_id)
+        db.add(db_task_group)
+        db.commit()
+        db.refresh(db_task_group)
         query = db.query(GroupUserDB).filter(GroupUserDB.group_id == task.entity_id) \
             .with_entities(GroupUserDB.user_id).all()
         users = [item.user_id for item in query]
         for user_id in users:
-            db_task_group = TaskGroupDB(task_id=db_task.id, group_id=task.entity_id)
-            db.add(db_task_group)
-            db.commit()
-            db.refresh(db_task_group)
-
             db_task_user = TaskUserDB(task_id=db_task.id, user_id=user_id)
             db.add(db_task_user)
             db.commit()
