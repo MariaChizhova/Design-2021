@@ -5,7 +5,8 @@ import datetime
 
 
 class Task(BaseModel):
-    user_id: int
+    type: str  # user_task/group_task
+    entity_id: int  # id of user/group
     name: str
     description: str
     priority: int
@@ -36,10 +37,8 @@ class TaskUserDB(Base):
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
 
-"""
-class Task_Group(Base):
+
+class TaskGroupDB(Base):
     __tablename__ = "task_group"
     group_id = Column(Integer, ForeignKey('groups.id'), primary_key=True)
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-"""
