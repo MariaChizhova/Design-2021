@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from app.authorization.service import get_db, get_current_user
 from sqlalchemy.orm import Session
 from app.groups.models import Group
-from app.groups.service import create_group, get_groups_user, get_groups
+from app.groups.service import create_group, get_groups_user, get_groups, delete_group_by_id
 from app.users.models import User
 
 router = APIRouter()
@@ -26,3 +26,8 @@ def get_task(user_id, db: Session = Depends(get_db)):
 @router.get("/groups/me/")
 async def get_tasks_me(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return get_groups_user(db=db, user_id=current_user.id)
+
+
+@router.post("/groups/delete/{group_id}/")
+def delete_group(group_id: int, db: Session = Depends(get_db)):
+    return delete_group_by_id(db=db, group_id=group_id)

@@ -11,6 +11,7 @@ from passlib.context import CryptContext
 from app.authorization.models import TokenData
 from app.users.data import SessionLocal
 from app.users.models import UserDB, User
+from app.users.service import get_user
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -76,16 +77,8 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
 
 
 def create_user(db: Session, user: User):
-    db_user = UserDB(username=user.username, hashed_password=get_password_hash(user.password))
+    db_user = UserDB(username=user.username, hashed_password=get_password_hash(user.password), email=user.email)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
-
-
-def get_user(db, username: str):
-    return db.query(UserDB).filter(UserDB.username == username).first()
-
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(UserDB).offset(skip).limit(limit).all()

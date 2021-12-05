@@ -18,6 +18,7 @@ class TaskDB(Base):
     __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True)
+    type = Column(String)
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
     name = Column(String)
     description = Column(String)

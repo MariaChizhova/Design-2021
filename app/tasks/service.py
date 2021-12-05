@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.groups.models import GroupUserDB
@@ -5,7 +6,8 @@ from app.tasks.models import Task, TaskDB, TaskUserDB, TaskGroupDB
 
 
 def create_task(db: Session, task: Task):
-    db_task = TaskDB(name=task.name,
+    db_task = TaskDB(type=task.type,
+                     name=task.name,
                      description=task.description,
                      priority=task.priority,
                      start_time=task.start_time,
@@ -42,3 +44,20 @@ def get_tasks_user(db: Session, user_id: int):
     query = db.query(TaskUserDB).filter(TaskUserDB.user_id == user_id).with_entities(TaskUserDB.task_id).all()
     task_ids = [item.task_id for item in query]
     return db.query(TaskDB).filter(TaskDB.id.in_(task_ids)).all()
+
+
+def get_tasks_group(db: Session, group_id: int):
+    query = db.query(TaskGroupDB).filter(TaskGroupDB.group_id == group_id).with_entities(TaskGroupDB.task_id).all()
+    task_ids = [item.task_id for item in query]
+    return db.query(TaskDB).filter(TaskDB.id.in_(task_ids)).all()
+
+
+def delete_task_by_id(db: Session, task_id: int):
+    db_task = db.query(TaskDB).filter(TaskDB.id == task_id).first()
+    if not db_task:
+        raise HTTPException(status_code=404, detail="Task_id not found")
+    db.delete(db_task)
+    db.query(TaskUserDB).filter(TaskUserDB.task_id == task_id).delete()
+    db.query(TaskGroupDB).filter(TaskGroupDB.task_id == task_id).delete()
+    db.commit()
+    return db_task

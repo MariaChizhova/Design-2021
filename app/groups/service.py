@@ -1,5 +1,7 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.groups.models import Group, GroupDB, GroupUserDB
+from app.tasks.models import TaskGroupDB
 
 
 def create_group(db: Session, group: Group):
@@ -24,3 +26,14 @@ def get_groups_user(db: Session, user_id: int):
     query = db.query(GroupUserDB).filter(GroupUserDB.user_id == user_id).with_entities(GroupUserDB.group_id).all()
     groups_ids = [item.group_id for item in query]
     return db.query(GroupDB).filter(GroupDB.id.in_(groups_ids)).all()
+
+
+def delete_group_by_id(db: Session, group_id: int):
+    db_group = db.query(GroupDB).filter(GroupDB.id == group_id).first()
+    if not db_group:
+        raise HTTPException(status_code=404, detail="Group_id not found")
+    db.delete(db_group)
+    db.query(GroupUserDB).filter(GroupUserDB.group_id == group_id).delete()
+    db.query(TaskGroupDB).filter(TaskGroupDB.group_id == group_id).delete()
+    db.commit()
+    return db_group
