@@ -5,6 +5,7 @@ from app.tasks.models import TaskGroupDB
 from app.tasks.service import get_tasks_group
 from app.users.models import UserDB
 from app.utils.utils import templates
+from app.tasks.service import unpack as tasks_unpack
 
 
 def create_group(db: Session, group: Group):
@@ -65,19 +66,10 @@ def get_group_info(request: Request, db: Session, group_id: int):
               "username": user.username,
               "is_active": str(user.is_active),
               "email": user.email} for user in users]
-    group_query = db.query(GroupDB).filter(GroupDB.id == group_id).first()
-
+    group = db.query(GroupDB).filter(GroupDB.id == group_id).first()
     tasks = get_tasks_group(db=db, group_id=group_id)
-    tasks = [{"name": task.name,
-              "description": task.description,
-              "priority": task.priority,
-              "start_time": task.start_time.ctime(),
-              "end_time": task.end_time.strftime("%m/%d/%Y, %H:%M:%S")} for task in tasks]
-
     return templates.TemplateResponse("groups/group_info.html",
                                       {"request": request,
-                                       "admin_id": group_query.admin_id,
-                                       "created_date": group_query.created_date.strftime("%m/%d/%Y, %H:%M:%S"),
-                                       "name": group_query.name,
+                                       "group": unpack([group])[0],
                                        "users": users,
-                                       "tasks": tasks})
+                                       "tasks": tasks_unpack(tasks)})

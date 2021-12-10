@@ -55,10 +55,15 @@ def get_tasks(request: Request, db: Session, skip: int = 0, limit: int = 100):
                                        "tasks": unpack(tasks)})
 
 
-def get_tasks_user(request: Request, db: Session, user_id: int):
+def get_tasks_by_user_id(db: Session, user_id: int):
     query = db.query(TaskUserDB).filter(TaskUserDB.user_id == user_id).with_entities(TaskUserDB.task_id).all()
     task_ids = [item.task_id for item in query]
     tasks = db.query(TaskDB).filter(TaskDB.id.in_(task_ids)).all()
+    return tasks
+
+
+def get_tasks_user(request: Request, db: Session, user_id: int):
+    tasks = get_tasks_by_user_id(db=db, user_id=user_id)
     return templates.TemplateResponse("tasks/all_tasks.html",
                                       {"request": request,
                                        "tasks": unpack(tasks)})

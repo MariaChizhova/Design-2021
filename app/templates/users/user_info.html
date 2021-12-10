@@ -3,13 +3,15 @@
         src="https://unpkg.com/tabulator-tables@4.9/dist/js/tabulator.min.js"></script>
 <link href="https://unpkg.com/tabulator-tables@4.9/dist/css/tabulator_simple.min.css" rel="stylesheet">
 <body>
-<h2>Group info</h2>
+<h2>User info</h2>
 <ul>
-    <li><b>admin_id: </b> {{group.admin_id}}</li>
-    <li><b>created_date: </b>{{group.created_date}}</li>
-    <li><b>name: </b>{{group.name}}</li>
+    <li><b>id: </b>{{user.id}}</li>
+    <li><b>username: </b> {{user.username}}</li>
+    <li><b>created_date: </b>{{user.created_date}}</li>
+    <li><b>email: </b>{{user.email}}</li>
+    <li><b>is_active: </b>{{user.is_active}}</li>
 </ul>
-<h3>Group tasks</h3>
+<h3>User tasks</h3>
 <div id="tasks-table"></div>
 <script>
     var tasks_table = new Tabulator("#tasks-table", {
@@ -18,6 +20,7 @@
         movableColumns: true,
         columns: [
             {title: "id", field: "entity_id"},
+            {title: "type", field: "type"},
             {title: "Name", field: "name"},
             {title: "Description", field: "description"},
             {title: "Priority", field: "priority"},
@@ -26,22 +29,6 @@
         ],
     });
     tasks_table.setData({{tasks|safe}});
-</script>
-<h3>Users</h3>
-<div id="users-table"></div>
-<script>
-    var users_table = new Tabulator("#users-table", {
-        height: "311px",
-        layout: "fitDataTable",
-        movableColumns: true,
-        columns: [
-            {title: "id", field: "id"},
-            {title: "username", field: "username"},
-            {title: "is_active", field: "is_active"},
-            {title: "email", field: "email"}
-        ],
-    });
-    users_table.setData({{users|safe}});
 </script>
 </body>
 </html>
