@@ -1,0 +1,23 @@
+<html>
+<script type="text/javascript"
+        src="https://unpkg.com/tabulator-tables@4.9/dist/js/tabulator.min.js"></script>
+<link href="https://unpkg.com/tabulator-tables@4.9/dist/css/tabulator_simple.min.css" rel="stylesheet">
+<body>
+<h3>Groups</h3>
+<div id="groups-table"></div>
+<script>
+    var groups_table = new Tabulator("#groups-table", {
+        height: "311px",
+        layout: "fitDataTable",
+        movableColumns: true,
+        columns: [
+            {title: "id", field: "id"},
+            {title: "Name", field: "name"},
+            {title: "admin_id", field: "admin_id"},
+            {title: "Created date", field: "created_date"}
+        ],
+    });
+    groups_table.setData({{groups|safe}});
+</script>
+</body>
+</html>

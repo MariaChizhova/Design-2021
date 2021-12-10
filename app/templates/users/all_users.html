@@ -1,0 +1,24 @@
+<html>
+<script type="text/javascript"
+        src="https://unpkg.com/tabulator-tables@4.9/dist/js/tabulator.min.js"></script>
+<link href="https://unpkg.com/tabulator-tables@4.9/dist/css/tabulator_simple.min.css" rel="stylesheet">
+<body>
+<h3>Users</h3>
+<div id="users-table"></div>
+<script>
+    var users_table = new Tabulator("#users-table", {
+        height: "311px",
+        layout: "fitDataTable",
+        movableColumns: true,
+        columns: [
+            {title: "id", field: "id"},
+            {title: "username", field: "username"},
+            {title: "is_active", field: "is_active"},
+            {title: "email", field: "email"},
+            {title: "Created date", field: "created_date"}
+        ],
+    });
+    users_table.setData({{users|safe}});
+</script>
+</body>
+</html>

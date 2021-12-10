@@ -5,11 +5,11 @@ from app.users.api import router as users_router
 from app.tasks.api import router as tasks_router
 from app.groups.api import router as groups_router
 from app.users.data import Base, engine
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
+from app.utils.utils import templates
+
 app = FastAPI()
-templates = Jinja2Templates(directory="app/templates")
 Base.metadata.create_all(bind=engine)
 
 app.include_router(auth_router)
@@ -19,5 +19,5 @@ app.include_router(groups_router)
 
 
 @app.get("/", response_class=HTMLResponse)
-async def read_item(request: Request):
+async def read_root(request: Request):
     return templates.TemplateResponse("root.html", {"request": request})

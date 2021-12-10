@@ -1,8 +1,9 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.groups.models import GroupUserDB
 from app.tasks.models import Task, TaskDB, TaskUserDB, TaskGroupDB
+from app.utils.utils import templates
 
 
 def create_task(db: Session, task: Task):
@@ -36,14 +37,31 @@ def create_task(db: Session, task: Task):
     return db_task
 
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(TaskDB).offset(skip).limit(limit).all()
+def unpack(tasks):
+    tasks = [{"type": task.type,
+              "entity_id": task.id,
+              "name": task.name,
+              "description": task.description,
+              "priority": task.priority,
+              "start_time": task.start_time.strftime("%m/%d/%Y, %H:%M:%S"),
+              "end_time": task.end_time.strftime("%m/%d/%Y, %H:%M:%S")} for task in tasks]
+    return tasks
 
 
-def get_tasks_user(db: Session, user_id: int):
+def get_tasks(request: Request, db: Session, skip: int = 0, limit: int = 100):
+    tasks = db.query(TaskDB).offset(skip).limit(limit).all()
+    return templates.TemplateResponse("tasks/all_tasks.html",
+                                      {"request": request,
+                                       "tasks": unpack(tasks)})
+
+
+def get_tasks_user(request: Request, db: Session, user_id: int):
     query = db.query(TaskUserDB).filter(TaskUserDB.user_id == user_id).with_entities(TaskUserDB.task_id).all()
     task_ids = [item.task_id for item in query]
-    return db.query(TaskDB).filter(TaskDB.id.in_(task_ids)).all()
+    tasks = db.query(TaskDB).filter(TaskDB.id.in_(task_ids)).all()
+    return templates.TemplateResponse("tasks/all_tasks.html",
+                                      {"request": request,
+                                       "tasks": unpack(tasks)})
 
 
 def get_tasks_group(db: Session, group_id: int):

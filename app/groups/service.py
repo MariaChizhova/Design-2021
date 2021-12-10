@@ -1,7 +1,10 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from sqlalchemy.orm import Session
 from app.groups.models import Group, GroupDB, GroupUserDB
 from app.tasks.models import TaskGroupDB
+from app.tasks.service import get_tasks_group
+from app.users.models import UserDB
+from app.utils.utils import templates
 
 
 def create_group(db: Session, group: Group):
@@ -18,14 +21,28 @@ def create_group(db: Session, group: Group):
     return db_group
 
 
-def get_groups(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(GroupDB).offset(skip).limit(limit).all()
+def unpack(groups):
+    groups = [{"id": group.id,
+               "name": group.name,
+               "admin_id": group.admin_id,
+               "created_date": group.created_date.strftime("%m/%d/%Y, %H:%M:%S")} for group in groups]
+    return groups
 
 
-def get_groups_user(db: Session, user_id: int):
+def get_groups(request: Request, db: Session, skip: int = 0, limit: int = 100):
+    groups = db.query(GroupDB).offset(skip).limit(limit).all()
+    return templates.TemplateResponse("groups/all_groups.html",
+                                      {"request": request,
+                                       "groups": unpack(groups)})
+
+
+def get_groups_user(request: Request, db: Session, user_id: int):
     query = db.query(GroupUserDB).filter(GroupUserDB.user_id == user_id).with_entities(GroupUserDB.group_id).all()
     groups_ids = [item.group_id for item in query]
-    return db.query(GroupDB).filter(GroupDB.id.in_(groups_ids)).all()
+    groups = db.query(GroupDB).filter(GroupDB.id.in_(groups_ids)).all()
+    return templates.TemplateResponse("groups/all_groups.html",
+                                      {"request": request,
+                                       "groups": unpack(groups)})
 
 
 def delete_group_by_id(db: Session, group_id: int):
@@ -37,3 +54,30 @@ def delete_group_by_id(db: Session, group_id: int):
     db.query(TaskGroupDB).filter(TaskGroupDB.group_id == group_id).delete()
     db.commit()
     return db_group
+
+
+def get_group_info(request: Request, db: Session, group_id: int):
+    users_query = db.query(GroupUserDB).filter(GroupUserDB.group_id == group_id).with_entities(
+        GroupUserDB.user_id).all()
+    users_ids = [item.user_id for item in users_query]
+    users = db.query(UserDB).filter(UserDB.id.in_(users_ids)).all()
+    users = [{"id": user.id,
+              "username": user.username,
+              "is_active": str(user.is_active),
+              "email": user.email} for user in users]
+    group_query = db.query(GroupDB).filter(GroupDB.id == group_id).first()
+
+    tasks = get_tasks_group(db=db, group_id=group_id)
+    tasks = [{"name": task.name,
+              "description": task.description,
+              "priority": task.priority,
+              "start_time": task.start_time.ctime(),
+              "end_time": task.end_time.strftime("%m/%d/%Y, %H:%M:%S")} for task in tasks]
+
+    return templates.TemplateResponse("groups/group_info.html",
+                                      {"request": request,
+                                       "admin_id": group_query.admin_id,
+                                       "created_date": group_query.created_date.strftime("%m/%d/%Y, %H:%M:%S"),
+                                       "name": group_query.name,
+                                       "users": users,
+                                       "tasks": tasks})

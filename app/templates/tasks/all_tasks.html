@@ -1,0 +1,26 @@
+<html>
+<script type="text/javascript"
+        src="https://unpkg.com/tabulator-tables@4.9/dist/js/tabulator.min.js"></script>
+<link href="https://unpkg.com/tabulator-tables@4.9/dist/css/tabulator_simple.min.css" rel="stylesheet">
+<body>
+<h3>Tasks</h3>
+<div id="tasks-table"></div>
+<script>
+    var tasks_table = new Tabulator("#tasks-table", {
+        height: "311px",
+        layout: "fitDataTable",
+        movableColumns: true,
+        columns: [
+            {title: "type", field: "type"},
+            {title: "entity_id", field: "entity_id"},
+            {title: "Name", field: "name"},
+            {title: "Description", field: "description"},
+            {title: "Priority", field: "priority"},
+            {title: "Start time", field: "start_time"},
+            {title: "End time", field: "end_time"}
+        ],
+    });
+    tasks_table.setData({{tasks|safe}});
+</script>
+</body>
+</html>
