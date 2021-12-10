@@ -25,7 +25,6 @@ def unpack(users):
 def get_user_by_id(request: Request, db, user_id: int):
     user = db.query(UserDB).filter(UserDB.id == user_id).first()
     tasks = get_tasks_by_user_id(db=db, user_id=user_id)
-    print(tasks_unpack(tasks))
     return templates.TemplateResponse("users/user_info.html",
                                       {"request": request,
                                        "user": unpack([user])[0],

@@ -9,8 +9,8 @@ router = APIRouter()
 
 
 @router.get("/users/me/", response_class=HTMLResponse)
-async def get_me(request: Request, current_user: User = Depends(get_current_user)):
-    return current_user
+async def get_me(request: Request, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return get_user_by_id(request=request, user_id=current_user.id, db=db)
 
 
 @router.get("/users/user_id/{user_id}", response_class=HTMLResponse)
