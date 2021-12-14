@@ -1,11 +1,12 @@
 from fastapi import HTTPException, Request
 from sqlalchemy.orm import Session
-from app.groups.models import Group, GroupDB, GroupUserDB
-from app.tasks.models import TaskGroupDB
+from app.groups.models import Group
+from app.tasks.data import TaskGroupDB
 from app.tasks.service import get_tasks_group
-from app.users.models import UserDB
+from app.users.data import UserDB
 from app.utils.utils import templates
 from app.tasks.service import unpack as tasks_unpack
+from app.groups.data import GroupDB, GroupUserDB
 
 
 def create_group(db: Session, group: Group):

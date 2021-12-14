@@ -1,9 +1,10 @@
 from fastapi import HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.groups.models import GroupUserDB
-from app.tasks.models import Task, TaskDB, TaskUserDB, TaskGroupDB
+from app.groups.data import GroupUserDB
+from app.tasks.models import Task
 from app.utils.utils import templates
+from app.tasks.data import TaskDB, TaskUserDB, TaskGroupDB
 
 
 def create_task(db: Session, task: Task):

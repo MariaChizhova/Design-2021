@@ -9,8 +9,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.authorization.models import TokenData
-from app.users.data import SessionLocal
-from app.users.models import UserDB, User
+from app.users.data import SessionLocal, UserDB
+from app.users.models import User
 from app.users.service import get_user
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"

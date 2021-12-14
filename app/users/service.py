@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Request
 
-from app.groups.models import GroupUserDB
-from app.tasks.models import TaskUserDB
+from app.groups.data import GroupUserDB
+from app.tasks.data import TaskUserDB
 from app.tasks.service import get_tasks_by_user_id, unpack as tasks_unpack
-from app.users.models import UserDB
+from app.users.data import UserDB
 from sqlalchemy.orm import Session
 
 from app.utils.utils import templates
