@@ -1,31 +1,23 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from sqlalchemy.orm import Session
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.authorization.models import TokenData
-from app.users.data import SessionLocal, UserDB
+from app.users.data import UserDB
 from app.users.models import User
 from app.users.service import get_user
+from dependency_injector.wiring import inject, Provide
+from dependencies import Container, Service
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def verify_password(plain_password, hashed_password):
@@ -56,7 +48,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+@inject
+async def get_current_user(db: Service = Depends(Provide[Container.db]), token: str = Depends(oauth2_scheme)):
+    db = next(db.get_db())
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -76,7 +70,7 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
     return user
 
 
-def create_user(db: Session, user: User):
+def create_user(db, user: User):
     db_user = UserDB(username=user.username, hashed_password=get_password_hash(user.password), email=user.email)
     db.add(db_user)
     db.commit()

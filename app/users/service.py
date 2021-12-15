@@ -5,7 +5,6 @@ from app.tasks.data import TaskUserDB
 from app.tasks.service import get_tasks_by_user_id, unpack as tasks_unpack
 from app.users.data import UserDB
 from sqlalchemy.orm import Session
-
 from app.utils.utils import templates
 
 
